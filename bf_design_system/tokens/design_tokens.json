@@ -1,0 +1,16 @@
+{
+  "palette": {
+    "blue": { "500": "#1E88E5", "600": "#1976D2" },
+    "gray": { "50": "#FAFAFA", "900": "#111111" }
+  },
+  "semantic": {
+    "brand": { "$value": "{palette.blue.500}" },
+    "brandOn": { "$value": "#FFFFFF" },
+    "bg": { "$value": "{palette.gray.50}" },
+    "textPrimary": { "$value": "{palette.gray.900}" },
+    "textSecondary": { "$value": "#6B7280" },
+    "success": { "$value": "#10B981" },
+    "warning": { "$value": "#F59E0B" },
+    "error": { "$value": "#EF4444" }
+  }
+}
