@@ -47322,7 +47322,7 @@ case 3:p.a+=a
 s=4
 return A.T(p.qy(),$async$qR)
 case 4:n=Date.now()
-o=new A.fv(""+1000*n+"-"+B.hn.na(0),a,new A.dP(Date.now(),0,!1),B.he,B.nR,"Added via addCurrency()",null)
+o=new A.fv(""+1000*n+"-"+B.hn.na(4294967296),a,new A.dP(Date.now(),0,!1),B.he,B.nR,"Added via addCurrency()",null)
 p.d.push(o)
 s=5
 return A.T(p.qz(),$async$qR)
@@ -47399,7 +47399,7 @@ s=3
 return A.T(p.lO(),$async$oj)
 case 3:p.a+=a
 n=Date.now()
-o=new A.fv(""+1000*n+"-"+B.hn.na(0),a,new A.dP(Date.now(),0,!1),B.he,c,b,null)
+o=new A.fv(""+1000*n+"-"+B.hn.na(4294967296),a,new A.dP(Date.now(),0,!1),B.he,c,b,null)
 p.d.push(o)
 s=4
 return A.T(p.qy(),$async$oj)
@@ -47424,7 +47424,7 @@ if(o<a){q=null
 s=1
 break}p.a=o-a
 o=Date.now()
-n=new A.fv(""+1000*o+"-"+B.hn.na(0),-a,new A.dP(Date.now(),0,!1),B.nT,B.nS,b,null)
+n=new A.fv(""+1000*o+"-"+B.hn.na(4294967296),-a,new A.dP(Date.now(),0,!1),B.nT,B.nS,b,null)
 p.d.push(n)
 s=4
 return A.T(p.qy(),$async$nI)
