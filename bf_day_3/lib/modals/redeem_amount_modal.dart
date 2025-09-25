@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../currency/exchange_rate.dart';
 
 /// RedeemAmountModal – follow-up modal to select BetterFlies amount with
 /// real-time conversion to LSA Credit. Designed to be shown via a DialogRoute
@@ -85,7 +86,8 @@ class _RedeemAmountModalState extends State<RedeemAmountModal> {
     final int amount = int.tryParse(text) ?? 0;
     setState(() {
       selectedAmount = amount;
-      calculatedDollars = (amount / 1000) * 10;
+      // Use single source of truth conversion
+      calculatedDollars = bfsToUsd(amount);
       selectedQuickAmount = null; // Clear quick selection when typing
     });
   }
@@ -95,7 +97,8 @@ class _RedeemAmountModalState extends State<RedeemAmountModal> {
     setState(() {
       selectedAmount = amount;
       selectedQuickAmount = amount;
-      calculatedDollars = (amount / 1000) * 10;
+      // Use single source of truth conversion
+      calculatedDollars = bfsToUsd(amount);
       _amountController.text = amount.toString();
     });
   }
@@ -352,9 +355,9 @@ class _RedeemAmountModalState extends State<RedeemAmountModal> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
-                                  '1,000 BetterFlies = \$10.00',
-                                  style: TextStyle(
+                                Text(
+                                  '1,000 BetterFlies = \$${(1000 / kBfsPerDollar).toStringAsFixed(2)}',
+                                  style: const TextStyle(
                                     fontFamily: 'Roboto',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,

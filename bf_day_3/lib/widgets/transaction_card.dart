@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bf_design_system/bf_design_system.dart';
 import '../modals/eligible_expenses_sheet.dart';
+import 'package:provider/provider.dart';
+import '../state/app_state.dart';
 
 /// Transaction status enum per spec
 enum TransactionStatus { approved, pending, processing, denied }
@@ -56,7 +58,22 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final list = transactions ?? _demoTransactions;
+    // Merge demo transactions with any LSA credit events from AppState
+    final credits = context.select<AppState, List<TransactionItem>>((app) {
+      return app.lsaCredits
+          .map(
+            (e) => TransactionItem(
+              company: 'BF redemption',
+              amount: e.amount, // positive credit
+              date: e.date,
+              status: TransactionStatus.approved,
+            ),
+          )
+          .toList(growable: false);
+    });
+    final baseList = transactions ?? _demoTransactions;
+    final list = [...credits, ...baseList]
+      ..sort((a, b) => b.date.compareTo(a.date));
 
     // Constrain to 384 max width; wrap content height
     return Center(

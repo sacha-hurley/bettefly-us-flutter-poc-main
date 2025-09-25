@@ -65,7 +65,7 @@ class BenefitSummaryCard extends StatelessWidget {
                       Text('Benefits', style: BdsTextStyle.displaySmall()),
                       const SizedBox(height: 4),
                       Text(
-                        'Available balance: \$${available.toStringAsFixed(2)}',
+                        'Available balance: \$${available.toStringAsFixed(0)}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: BdsColors.onSurfaceTextVariant,
                         ),

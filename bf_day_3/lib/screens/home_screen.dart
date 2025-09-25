@@ -3,7 +3,8 @@ import 'package:bubble_ds/bubble_ds.dart';
 // import 'package:provider/provider.dart';
 // import '../state/app_state.dart';
 // import '../widgets/main_todo_card.dart';
-import '../widgets/onboarding_todo_card.dart';
+// import '../widgets/onboarding_todo_card.dart';
+import '../widgets/todo_main_card.dart';
 // import '../widgets/snapshot_card.dart';
 // import '../widgets/progress_counter.dart'; // removed: progress moved into MainTodoCard
 // import '../navigation/bottom_navigation.dart';
@@ -36,8 +37,8 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          // ProgressCounter removed per design; progress now appears inside the card
-          const OnboardingTodoCard(),
+          // Replace legacy onboarding to-do with new TodoMainCard
+          const TodoMainCard(),
           const SizedBox(height: 32),
           Text(
             'Shortcuts',

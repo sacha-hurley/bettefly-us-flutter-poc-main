@@ -24,6 +24,12 @@ class TabSwitchNotification extends Notification {
   final int tabIndex;
 }
 
+/// SetSocialSubTabNotification - allows switching to Social tab with a specific sub-tab active
+class SetSocialSubTabNotification extends Notification {
+  const SetSocialSubTabNotification(this.subTabIndex);
+  final int subTabIndex; // 0: Leaderboard, 1: Challenges
+}
+
 /// Main bottom navigation using bubble_ds BdsNavbar component
 /// Implements persistent 4-tab navigation: Home, Benefits, Health, Social
 /// Each tab maintains its own navigation stack for detail screens
@@ -45,6 +51,9 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
   // Observe route changes inside the Health tab's nested navigator
   late final RouteObserver<PageRoute<dynamic>> _healthRouteObserver;
   String? _healthDetailTitle; // dynamic title from route args
+
+  // Optional desired sub-tab for Social page when switching tabs programmatically
+  int? _desiredSocialSubTab;
 
   // Navigation keys for each tab to maintain separate navigation stacks
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
@@ -158,7 +167,15 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
       case 3: // Social tab
         switch (settings.name) {
           case '/':
-            screen = const ChallengesScreen();
+            final initial = _desiredSocialSubTab ?? 0;
+            _desiredSocialSubTab = null; // consume once
+            screen = ChallengesScreen(initialTab: initial);
+            break;
+          case '/challengesTab':
+            screen = const ChallengesScreen(initialTab: 1);
+            break;
+          case '/leaderboardTab':
+            screen = const ChallengesScreen(initialTab: 0);
             break;
           case '/company':
             screen = const CompanyChallengeDetailScreen();
@@ -197,83 +214,102 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
         _navbarController.currentIndex == 2 &&
         (healthNavigator?.canPop() ?? false);
 
-    return NotificationListener<TabSwitchNotification>(
-      onNotification: (notification) {
-        _onNavigationChanged(notification.tabIndex);
+    return NotificationListener<SetSocialSubTabNotification>(
+      onNotification: (n) {
+        _desiredSocialSubTab = n.subTabIndex;
         return true;
       },
-      child: Scaffold(
-        // Route-aware top navigation: simplified on detail pages, else standard
-        appBar: isBenefitsDetail
-            ? _SecondaryNavAppBar(
-                title: _benefitsDetailTitle ?? 'Benefit Details',
-                onBack: () => benefitsNavigator?.maybePop(),
-              )
-            : isHealthDetail
-            ? _SecondaryNavAppBar(
-                title: _healthDetailTitle ?? 'Step Details',
-                onBack: () => healthNavigator?.maybePop(),
-              )
-            : _LoadingAwareTopNavigation(
-                onAvatarTap: () => _showProfileSettings(context),
-                onCurrencyTap: () => _showCurrencyDetails(context),
-                onBuddyTap: () => _showBuddyChat(context),
+      child: NotificationListener<TabSwitchNotification>(
+        onNotification: (notification) {
+          _onNavigationChanged(notification.tabIndex);
+          // If switching to Social and a desired sub-tab is queued, rebuild that tab's root
+          if (notification.tabIndex == 3 && _desiredSocialSubTab != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final socialNav = _navigatorKeys[3].currentState;
+              // Reset to root and navigate explicitly to the Challenges tab route
+              socialNav?.popUntil((route) => route.isFirst);
+              final targetRoute = _desiredSocialSubTab == 1
+                  ? '/challengesTab'
+                  : '/leaderboardTab';
+              socialNav?.pushReplacementNamed(targetRoute);
+              _desiredSocialSubTab = null;
+            });
+          }
+          return true;
+        },
+        child: Scaffold(
+          // Route-aware top navigation: simplified on detail pages, else standard
+          appBar: isBenefitsDetail
+              ? _SecondaryNavAppBar(
+                  title: _benefitsDetailTitle ?? 'Benefit Details',
+                  onBack: () => benefitsNavigator?.maybePop(),
+                )
+              : isHealthDetail
+              ? _SecondaryNavAppBar(
+                  title: _healthDetailTitle ?? 'Step Details',
+                  onBack: () => healthNavigator?.maybePop(),
+                )
+              : _LoadingAwareTopNavigation(
+                  onAvatarTap: () => _showProfileSettings(context),
+                  onCurrencyTap: () => _showCurrencyDetails(context),
+                  onBuddyTap: () => _showBuddyChat(context),
+                ),
+          // Use IndexedStack to preserve state across tabs
+          body: IndexedStack(
+            index: _navbarController.currentIndex,
+            children: _pages,
+          ),
+          // Use bubble_ds BdsNavbar component
+          bottomNavigationBar: BdsNavbar(
+            controller: _navbarController,
+            onChanged: _onNavigationChanged,
+            navbarItems: [
+              // Home tab
+              BdsNavbarItem(
+                label: 'Home',
+                icon: BdsNavbarIcons.home,
+                onTapEnabled: ({required isCurrentItem}) {
+                  // Handle home tab selection
+                  if (!isCurrentItem) {
+                    _onNavigationChanged(0);
+                  }
+                },
               ),
-        // Use IndexedStack to preserve state across tabs
-        body: IndexedStack(
-          index: _navbarController.currentIndex,
-          children: _pages,
-        ),
-        // Use bubble_ds BdsNavbar component
-        bottomNavigationBar: BdsNavbar(
-          controller: _navbarController,
-          onChanged: _onNavigationChanged,
-          navbarItems: [
-            // Home tab
-            BdsNavbarItem(
-              label: 'Home',
-              icon: BdsNavbarIcons.home,
-              onTapEnabled: ({required isCurrentItem}) {
-                // Handle home tab selection
-                if (!isCurrentItem) {
-                  _onNavigationChanged(0);
-                }
-              },
-            ),
-            // Benefits tab
-            BdsNavbarItem(
-              label: 'Benefits',
-              icon: BdsNavbarIcons.benefits,
-              onTapEnabled: ({required isCurrentItem}) {
-                // Handle benefits tab selection
-                if (!isCurrentItem) {
-                  _onNavigationChanged(1);
-                }
-              },
-            ),
-            // Health tab - using journey icon as closest match
-            BdsNavbarItem(
-              label: 'Health',
-              icon: BdsNavbarIcons.journey,
-              onTapEnabled: ({required isCurrentItem}) {
-                // Handle health tab selection
-                if (!isCurrentItem) {
-                  _onNavigationChanged(2);
-                }
-              },
-            ),
-            // Social tab
-            BdsNavbarItem(
-              label: 'Social',
-              icon: BdsNavbarIcons.social,
-              onTapEnabled: ({required isCurrentItem}) {
-                // Handle social tab selection
-                if (!isCurrentItem) {
-                  _onNavigationChanged(3);
-                }
-              },
-            ),
-          ],
+              // Benefits tab
+              BdsNavbarItem(
+                label: 'Benefits',
+                icon: BdsNavbarIcons.benefits,
+                onTapEnabled: ({required isCurrentItem}) {
+                  // Handle benefits tab selection
+                  if (!isCurrentItem) {
+                    _onNavigationChanged(1);
+                  }
+                },
+              ),
+              // Health tab - using journey icon as closest match
+              BdsNavbarItem(
+                label: 'Health',
+                icon: BdsNavbarIcons.journey,
+                onTapEnabled: ({required isCurrentItem}) {
+                  // Handle health tab selection
+                  if (!isCurrentItem) {
+                    _onNavigationChanged(2);
+                  }
+                },
+              ),
+              // Social tab
+              BdsNavbarItem(
+                label: 'Social',
+                icon: BdsNavbarIcons.social,
+                onTapEnabled: ({required isCurrentItem}) {
+                  // Handle social tab selection
+                  if (!isCurrentItem) {
+                    _onNavigationChanged(3);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -20,7 +20,7 @@ class NotificationHost extends StatefulWidget {
   static void showToast(
     BuildContext context, {
     required String message,
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(milliseconds: 3000),
     IconData icon = Icons.check_circle_outline,
   }) {
     final state = NotificationHost.of(context);
@@ -56,8 +56,8 @@ class _NotificationHostState extends State<NotificationHost>
       _visible = true; // visible via slide
     });
 
-    // Hold for exactly 2 seconds regardless of input duration
-    _timer = Timer(const Duration(seconds: 2), () {
+    // Hold for the requested duration
+    _timer = Timer(duration, () {
       if (!mounted) return;
       setState(() => _visible = false);
     });
@@ -71,7 +71,7 @@ class _NotificationHostState extends State<NotificationHost>
         // Top toast overlay
         SafeArea(
           child: AnimatedSlide(
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             offset: _visible ? const Offset(0, 0) : const Offset(0, -1),
             child: Align(

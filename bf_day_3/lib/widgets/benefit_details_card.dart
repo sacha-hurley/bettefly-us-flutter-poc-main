@@ -52,7 +52,7 @@ class BenefitDetailsCard extends StatelessWidget {
             .clamp(0.0, 1.0);
 
     // Formatters
-    String formatMoney(double amount) => '\$${amount.toStringAsFixed(2)}';
+    String formatMoney(double amount) => '\$${amount.toStringAsFixed(0)}';
 
     String formatPercent(double fraction) =>
         '${(fraction * 100).toStringAsFixed(1)}%';

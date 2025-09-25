@@ -12,6 +12,17 @@ Future<void> main() async {
   // Ensure currency service loads its persisted state before UI renders.
   WidgetsFlutterBinding.ensureInitialized();
   await CurrencyService().ensureLoaded();
+  // Debug: clear persisted todos on hot restart for a fresh state
+  assert(() {
+    () async {
+      final svc = await SharedPreferences.getInstance();
+      // Use a toggle flag to clear only once per run if needed; clear always here
+      // Import is heavy here, so call via shared prefs keys directly
+      await svc.remove('todo_items_v1');
+      await svc.remove('todo_collapsed_v1');
+    }();
+    return true;
+  }());
 
   // Debug-only one-time seed: add 4,000 BetterFlies to facilitate testing
   // This runs only once thanks to a SharedPreferences flag.

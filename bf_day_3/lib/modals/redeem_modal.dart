@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../state/app_state.dart';
+import '../benefits/repository.dart';
+import '../benefits/models.dart';
 
 /// RedeemModal – Centered dialog for selecting a benefit and continuing
 /// Follows pixel specs from design:
@@ -106,45 +110,63 @@ class _RedeemModalState extends State<RedeemModal> {
                             children: [
                               // Left text
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    // Title
-                                    Text(
-                                      'LSA Benefit Card',
-                                      style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: _primaryText,
-                                        height: 14 / 14,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    // Amount available
-                                    Text(
-                                      '\$45.00 available',
-                                      style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: _secondaryText,
-                                        height: 20 / 14,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    // Remaining this year
-                                    Text(
-                                      '\$1,755.00 remaining this year',
-                                      style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: _tertiaryText,
-                                        height: 16 / 12,
-                                      ),
-                                    ),
-                                  ],
+                                child: Builder(
+                                  builder: (context) {
+                                    final app = context.watch<AppState>();
+                                    final availableStr =
+                                        '\$${app.lsaBalance.toStringAsFixed(0)} available';
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'LSA Benefit Card',
+                                          style: TextStyle(
+                                            fontFamily: 'Roboto',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: _primaryText,
+                                            height: 14 / 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          availableStr,
+                                          style: const TextStyle(
+                                            fontFamily: 'Roboto',
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: _secondaryText,
+                                            height: 20 / 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        FutureBuilder<LsaBenefit>(
+                                          future: BenefitsRepository()
+                                              .fetchLsaBenefit(),
+                                          builder: (context, snapshot) {
+                                            final total =
+                                                snapshot.data?.totalDollars ??
+                                                0.0;
+                                            final remainingStr =
+                                                snapshot.hasData
+                                                ? '\$${total.toStringAsFixed(0)} remaining this year'
+                                                : '—';
+                                            return Text(
+                                              remainingStr,
+                                              style: const TextStyle(
+                                                fontFamily: 'Roboto',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                color: _tertiaryText,
+                                                height: 16 / 12,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               ),
 

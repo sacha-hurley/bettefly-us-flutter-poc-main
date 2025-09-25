@@ -5,6 +5,7 @@ import 'package:bf_day_3/widgets/health/cards/steps_metric_card.dart';
 import 'package:bf_day_3/widgets/health/cards/heart_rate_metric_card.dart';
 import 'package:bf_day_3/widgets/health/cards/active_calories_metric_card.dart';
 // import 'package:bf_day_3/services/health_service.dart';
+import 'package:bf_day_3/widgets/secondary_todo_card.dart';
 
 class HealthDashboardScreen extends StatefulWidget {
   const HealthDashboardScreen({super.key});
@@ -52,6 +53,12 @@ class _HealthDashboardScreenState extends State<HealthDashboardScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+              // Secondary To-dos card: under header and above steps
+              const SecondaryTodoCard(
+                todoIds: ['dashboard'],
+                pageContext: 'health',
+              ),
+              const SizedBox(height: 16),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (!_authorized)

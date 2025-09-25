@@ -34,6 +34,17 @@ class CurrencyService extends ChangeNotifier {
   int get currentCurrency => _currentCurrency;
   bool get isLoaded => _isLoaded;
 
+  /// Lifetime total across all earned transactions (challenge and non-challenge)
+  int get lifetimeTotalEarned {
+    int sum = 0;
+    for (final t in _transactions) {
+      if (t.type == BFTransactionType.earned && t.amount > 0) {
+        sum += t.amount;
+      }
+    }
+    return sum;
+  }
+
   // ValueNotifier for reactive UI updates
   ValueNotifier<int>? _currencyNotifier;
   ValueNotifier<int> get currencyNotifier {

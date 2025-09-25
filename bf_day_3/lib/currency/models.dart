@@ -3,7 +3,16 @@ import 'dart:convert';
 /// Currency domain models for BetterFlies (BFs)
 
 /// Source of a BetterFly earning or spend event
-enum BFSource { tourItem, manualEntry, wearableSync, bonus, redemption }
+enum BFSource {
+  tourItem,
+  manualEntry,
+  wearableSync,
+  bonus,
+  redemption,
+  challengeDaily,
+  challengeWeekly,
+  challengeMonthly,
+}
 
 /// Transaction type: earned or spent (negative amount for spent)
 enum BFTransactionType { earned, spent }
@@ -96,18 +105,22 @@ extension MilestoneTierThreshold on MilestoneTier {
   static MilestoneTier fromBalance(int balance) {
     if (balance >= MilestoneTier.legend.threshold) return MilestoneTier.legend;
     if (balance >= MilestoneTier.master.threshold) return MilestoneTier.master;
-    if (balance >= MilestoneTier.champion.threshold)
+    if (balance >= MilestoneTier.champion.threshold) {
       return MilestoneTier.champion;
+    }
     return MilestoneTier.explorer;
   }
 
   static int toNextThreshold(int balance) {
-    if (balance < MilestoneTier.champion.threshold)
+    if (balance < MilestoneTier.champion.threshold) {
       return MilestoneTier.champion.threshold;
-    if (balance < MilestoneTier.master.threshold)
+    }
+    if (balance < MilestoneTier.master.threshold) {
       return MilestoneTier.master.threshold;
-    if (balance < MilestoneTier.legend.threshold)
+    }
+    if (balance < MilestoneTier.legend.threshold) {
       return MilestoneTier.legend.threshold;
+    }
     return MilestoneTier.legend.threshold; // already at or above legend
   }
 }

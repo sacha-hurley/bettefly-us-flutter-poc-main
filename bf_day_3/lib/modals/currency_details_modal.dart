@@ -341,6 +341,15 @@ class _CurrencyDetailsModalState extends State<CurrencyDetailsModal> {
       case BFSource.redemption:
         source = 'Redemption';
         break;
+      case BFSource.challengeDaily:
+        source = 'Daily Challenge';
+        break;
+      case BFSource.challengeWeekly:
+        source = 'Weekly Challenge';
+        break;
+      case BFSource.challengeMonthly:
+        source = 'Monthly Challenge';
+        break;
     }
     final now = DateTime.now();
     final date = t.timestamp.toLocal();

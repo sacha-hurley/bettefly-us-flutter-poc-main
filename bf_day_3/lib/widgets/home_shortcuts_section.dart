@@ -24,7 +24,7 @@ class HomeShortcutsSection extends StatelessWidget {
           headerIconBg: const Color(0xFFAFF3E9),
           headerIcon: Icons.credit_card,
           title: 'Benefits',
-          leftValue: '\$${app.lsaBalance.toStringAsFixed(2)}',
+          leftValue: '\$${app.lsaBalance.toStringAsFixed(0)}',
           leftCaption: 'LSA remaining',
           rightValue: '1',
           rightCaption: 'Active benefits',

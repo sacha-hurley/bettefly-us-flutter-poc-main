@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import '../services/currency_service.dart';
+import '../currency/models.dart';
+
+class LsaCreditEvent {
+  final double amount;
+  final DateTime date;
+  final String memo;
+
+  LsaCreditEvent({
+    required this.amount,
+    required this.date,
+    required this.memo,
+  });
+}
 
 class AppState extends ChangeNotifier {
   String userName = 'Sarah';
-  int coins = 350;
   int earningStreak = 3;
 
   bool reviewHealth = false;
@@ -10,8 +23,9 @@ class AppState extends ChangeNotifier {
   bool completeChallenge = false;
   bool browseBenefits = false;
 
-  double lsaBalance = 247.50;
+  double lsaBalance = 248.0;
   String lsaRecentTransaction = '+\$25 receipt approved';
+  List<LsaCreditEvent> lsaCredits = [];
 
   int yesterdaySteps = 9247;
   String yesterdaySleep = '7h 32m';
@@ -24,21 +38,37 @@ class AppState extends ChangeNotifier {
 
   void completeHealthReview() {
     reviewHealth = true;
-    coins += 25;
+    // Route reward through BetterFlies currency service
+    // Award a small bonus for completing the health review task
+    CurrencyService().awardBetterFlies(
+      amount: 25,
+      source: BFSource.bonus,
+      description: 'Reviewed health dashboard',
+    );
     notifyListeners();
   }
 
   void joinCompanyChallenge() {
     joinChallenge = true;
     hasJoinedCompany = true;
-    coins += 25;
+    // Award BetterFlies for opting into the company challenge
+    CurrencyService().awardBetterFlies(
+      amount: 25,
+      source: BFSource.bonus,
+      description: 'Joined company challenge',
+    );
     notifyListeners();
   }
 
   void completeFirstChallenge() {
     if (!joinChallenge) return;
     completeChallenge = true;
-    coins += 50;
+    // Award BetterFlies for completing the first challenge CTA
+    CurrencyService().awardBetterFlies(
+      amount: 50,
+      source: BFSource.bonus,
+      description: 'Completed first challenge',
+    );
     notifyListeners();
   }
 
@@ -49,7 +79,6 @@ class AppState extends ChangeNotifier {
 
   void reset() {
     userName = 'Sarah';
-    coins = 350;
     earningStreak = 3;
 
     reviewHealth = false;
@@ -57,8 +86,9 @@ class AppState extends ChangeNotifier {
     completeChallenge = false;
     browseBenefits = false;
 
-    lsaBalance = 247.50;
+    lsaBalance = 248.0;
     lsaRecentTransaction = '+\$25 receipt approved';
+    lsaCredits = [];
 
     yesterdaySteps = 9247;
     yesterdaySleep = '7h 32m';
@@ -78,8 +108,9 @@ class AppState extends ChangeNotifier {
     if (amount <= 0) return;
     lsaBalance += amount;
     lsaRecentTransaction = '+\$${amount.toStringAsFixed(2)} $memo';
+    lsaCredits.add(
+      LsaCreditEvent(amount: amount, date: DateTime.now(), memo: memo),
+    );
     notifyListeners();
   }
 }
-
-

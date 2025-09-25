@@ -47,7 +47,7 @@ class CompanyChallengeDetailScreen extends StatelessWidget {
                 child: Text(
                   app.completeChallenge
                       ? 'Completed'
-                      : 'Complete first daily challenge (+50 coins)',
+                      : 'Complete first daily challenge (+50 BetterFlies)',
                 ),
               ),
             ),
